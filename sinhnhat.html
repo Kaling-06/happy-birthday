@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday</title>
+  <!-- Font viết tay dễ thương -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .text {
+      font-size: 40px;
+      font-family: 'Pacifico', cursive;
+      color: #ffb6c1; /* pastel pink */
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      white-space: pre-line;
+      text-align: center;
+      /* 🌟 Glow lung linh */
+      text-shadow: 
+        0 0 10px rgba(255,182,193,0.8),
+        0 0 20px rgba(255,182,193,0.6),
+        0 0 30px rgba(255,182,193,0.4);
+    }
+
+    .show { opacity: 1; }
+    .hide { opacity: 0; }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 0;
+    }
+
+    /* 🚫 Khi để dọc (portrait) thì ẩn hết + hiện thông báo */
+    @media screen and (orientation: portrait) {
+      body::before {
+        content: "👉 Vui lòng xoay ngang điện thoại để xem 🎂";
+        color: #ffb6c1;
+        font-size: 20px;
+        font-family: 'Pacifico', cursive;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #000;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 9999;
+      }
+      #matrix, .text {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="countdown" class="text">3</div>
+  <div id="message" class="text">🎂 Happy Birthday To Me 🎉</div>
+  <div id="name" class="text">Ánh Tuyết</div>
+  <div id="dob" class="text">01/09/2006</div>
+  <div id="wish" class="text"></div>
+
+  <canvas id="matrix"></canvas>
+
+  <script>
+    // ===== Matrix Background =====
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = "HAPPY BIRTHDAY ";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+      ctx.fillStyle = "rgba(0,0,0,0.2)"; // nền nhẹ hơn
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(255,182,193,0.6)"; // chữ hồng pastel nhạt
+      ctx.font = fontSize + "px Pacifico";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(draw, 50);
+
+    // ===== Text Sequence =====
+    let countdownEl = document.getElementById("countdown");
+    let messageEl = document.getElementById("message");
+    let nameEl = document.getElementById("name");
+    let dobEl = document.getElementById("dob");
+    let wishEl = document.getElementById("wish");
+
+    let count = 3;
+
+    function startCountdown() {
+      let timer = setInterval(() => {
+        countdownEl.textContent = count;
+        countdownEl.classList.add("show");
+        count--;
+
+        if (count < 0) {
+          clearInterval(timer);
+          countdownEl.classList.remove("show");
+          countdownEl.classList.add("hide");
+          showSequence();
+        }
+      }, 1000);
+    }
+
+    function typeWriter(text, element, speed=80) {
+      let i = 0;
+      element.innerHTML = "";
+      function typing() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        }
+      }
+      typing();
+    }
+
+    function showSequence() {
+      setTimeout(() => messageEl.classList.add("show"), 500);
+      setTimeout(() => messageEl.classList.remove("show"), 2500);
+
+      setTimeout(() => nameEl.classList.add("show"), 3500);
+      setTimeout(() => nameEl.classList.remove("show"), 5500);
+
+      setTimeout(() => dobEl.classList.add("show"), 6500);
+      setTimeout(() => dobEl.classList.remove("show"), 8500);
+
+      setTimeout(() => {
+        wishEl.classList.add("show");
+        typeWriter("Chúc bạn tuổi mới thật nhiều niềm vui, hạnh phúc và thành công! ✨", wishEl, 80);
+      }, 9500);
+    }
+
+    startCountdown();
+  </script>
+</body>
+</html>
